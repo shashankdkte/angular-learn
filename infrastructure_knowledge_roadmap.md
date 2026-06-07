@@ -3,7 +3,7 @@
 A step-by-step learning path to understand how a web application moves from code on a laptop to a real production system used by users.
 
 ---
-
+```mermaid
 flowchart TD
     U[Users] --> DNS[Domain / DNS]
     DNS --> CDN[CDN - CloudFront]
@@ -19,7 +19,7 @@ flowchart TD
     BE --> EXT[Payment / Email / WhatsApp]
     BE --> OBS[Logs / Monitoring / Alerts]
     DB --> BKP[Backups]
-
+```
 
 ## Table of Contents
 
