@@ -4,39 +4,89 @@ A step-by-step learning path to understand how a web application moves from code
 
 ---
 
+## Table of Contents
+
+| Part | Focus | Sections |
+|------|-------|----------|
+| **I** | Application fundamentals | 1–9 |
+| **II** | Deployment & server | 10–16 |
+| **III** | Cloud & operations | 17–24 |
+| **IV** | Scale & production | 25–28 |
+
+---
+
+## Roadmap at a Glance
+
+```mermaid
+flowchart TB
+    subgraph P1["Phase 1 — Local Understanding"]
+        A1[Web app basics]
+        A2[Frontend / Backend / DB]
+        A3[HTTP & APIs]
+        A4[Auth & DB design]
+    end
+
+    subgraph P2["Phase 2 — First Deployment"]
+        B1[Linux & SSH]
+        B2[PM2 + Node deploy]
+        B3[Nginx + Angular]
+        B4[Domain, DNS, SSL]
+    end
+
+    subgraph P3["Phase 3 — Production Readiness"]
+        C1[Env management]
+        C2[Files & notifications]
+        C3[Security & performance]
+        C4[Monitoring & backups]
+    end
+
+    subgraph P4["Phase 4 — Scale"]
+        D1[Redis & caching]
+        D2[Queues & workers]
+        D3[CDN & S3]
+        D4[Load balancing]
+    end
+
+    subgraph P5["Phase 5 — Mature Infrastructure"]
+        E1[CI/CD]
+        E2[Docker]
+        E3[HA & DR]
+        E4[Cost control]
+    end
+
+    P1 --> P2 --> P3 --> P4 --> P5
+```
+
+---
+
+# Part I — Application Fundamentals
+
+---
+
 ## 1. Web Application Basics
 
 A web application is usually made of:
 
-```text
-User
- ↓
-Browser / Mobile App
- ↓
-Frontend
- ↓
-Backend API
- ↓
-Database
- ↓
-Storage / Cache / Queue / External Services
+```mermaid
+flowchart TD
+    U[User] --> B[Browser / Mobile App]
+    B --> F[Frontend]
+    F --> API[Backend API]
+    API --> DB[(Database)]
+    DB --> S[Storage / Cache / Queue / External Services]
 ```
 
-Example:
+**ClassInTown example:**
 
-```text
-classintown.com
- ↓
-Angular website
- ↓
-Node.js / Express APIs
- ↓
-MongoDB
- ↓
-Emails, WhatsApp, Google Calendar, Payments, Notifications
+```mermaid
+flowchart TD
+    D[classintown.com] --> A[Angular website]
+    A --> N[Node.js / Express APIs]
+    N --> M[(MongoDB)]
+    M --> E[Emails, WhatsApp, Google Calendar, Payments, Notifications]
 ```
 
-You should understand:
+**You should understand:**
 
 - What happens when a user opens a website?
 - What is a browser request?
@@ -51,42 +101,49 @@ You should understand:
 
 This is the core foundation.
 
-```text
-Frontend = What the user sees
-Backend = Business logic
-Database = Permanent data storage
+| Layer | Role |
+|-------|------|
+| **Frontend** | What the user sees |
+| **Backend** | Business logic |
+| **Database** | Permanent data storage |
+
+**Example breakdown:**
+
+```mermaid
+flowchart LR
+    subgraph Frontend
+        F1[Login page]
+        F2[Class listing]
+        F3[Payment page]
+        F4[Instructor dashboard]
+    end
+
+    subgraph Backend
+        B1[Login API]
+        B2[Create class API]
+        B3[Enrollment API]
+        B4[Payment verification API]
+    end
+
+    subgraph Database
+        D1[Users]
+        D2[Classes]
+        D3[Enrollments]
+        D4[Payments]
+        D5[Notifications]
+    end
+
+    Frontend --> Backend --> Database
 ```
 
-Example:
+**MEAN stack mapping:**
 
-```text
-Frontend:
-- Login page
-- Class listing page
-- Payment page
-- Instructor dashboard
-
-Backend:
-- Login API
-- Create class API
-- Enrollment API
-- Payment verification API
-
-Database:
-- Users
-- Classes
-- Enrollments
-- Payments
-- Notifications
-```
-
-For a MEAN stack application:
-
-```text
-MongoDB  → Database
-Express  → Backend API framework
-Angular  → Frontend
-Node.js  → Backend runtime
+```mermaid
+flowchart LR
+    M[(MongoDB)] ---|Database| M
+    E[Express] ---|Backend API framework| E
+    A[Angular] ---|Frontend| A
+    N[Node.js] ---|Backend runtime| N
 ```
 
 ---
@@ -95,41 +152,32 @@ Node.js  → Backend runtime
 
 You must understand how one user action works end to end.
 
-Example: user logs in.
+**Example: user logs in**
 
-```text
-User enters mobile/email
- ↓
-Angular sends request
- ↓
-Node.js API receives request
- ↓
-Backend validates data
- ↓
-Backend checks MongoDB
- ↓
-Backend creates token
- ↓
-Response goes back to Angular
- ↓
-User enters dashboard
+```mermaid
+sequenceDiagram
+    actor User
+    participant Angular
+    participant Node as Node.js API
+    participant MongoDB
+
+    User->>Angular: Enters mobile/email
+    Angular->>Node: POST /auth/login
+    Node->>Node: Validate data
+    Node->>MongoDB: Check credentials
+    MongoDB-->>Node: User record
+    Node->>Node: Create JWT token
+    Node-->>Angular: 200 + token
+    Angular-->>User: Redirect to dashboard
 ```
 
-Important topics:
+**Important topics:**
 
-- HTTP
-- HTTPS
-- GET
-- POST
-- PUT
-- PATCH
-- DELETE
-- Status codes
-- Headers
-- Request body
-- Response body
-- Cookies
-- Tokens
+- HTTP, HTTPS
+- GET, POST, PUT, PATCH, DELETE
+- Status codes, headers
+- Request body, response body
+- Cookies, tokens
 
 ---
 
@@ -137,27 +185,23 @@ Important topics:
 
 APIs connect the frontend and backend.
 
-Example API routes:
+**Example API routes:**
 
-```text
-POST /api/v1/auth/login
-GET /api/v1/classes
-POST /api/v1/enrollments
-PATCH /api/v1/payments/:id
-```
+| Method | Route |
+|--------|-------|
+| POST | `/api/v1/auth/login` |
+| GET | `/api/v1/classes` |
+| POST | `/api/v1/enrollments` |
+| PATCH | `/api/v1/payments/:id` |
 
-You should learn:
+**You should learn:**
 
-- REST APIs
-- API versioning
-- Request validation
-- Response structure
-- Error handling
-- Authentication middleware
-- Authorization middleware
+- REST APIs, API versioning
+- Request validation, response structure, error handling
+- Authentication & authorization middleware
 - Rate limiting
 
-Good API response format:
+**Good API response format:**
 
 ```json
 {
@@ -167,7 +211,7 @@ Good API response format:
 }
 ```
 
-Good error response format:
+**Good error response format:**
 
 ```json
 {
@@ -181,36 +225,26 @@ Good error response format:
 
 ## 5. Authentication and Authorization
 
-Authentication means:
+| Concept | Question |
+|---------|----------|
+| **Authentication** | Who are you? |
+| **Authorization** | What are you allowed to do? |
 
-```text
-Who are you?
+**Role example:**
+
+```mermaid
+flowchart TD
+    S[Student] -->|can| E[Enroll in a class]
+    I[Instructor] -->|can| A[Approve enrollment]
+    AD[Admin] -->|can| U[Manage users]
+    SA[Super admin] -->|can| P[Manage platform settings]
 ```
 
-Authorization means:
+**Learn:**
 
-```text
-What are you allowed to do?
-```
-
-Example:
-
-```text
-Student can enroll in a class.
-Instructor can approve enrollment.
-Admin can manage users.
-Super admin can manage platform settings.
-```
-
-Learn:
-
-- JWT token
-- Refresh token
-- Session
-- Password hashing
-- OTP login
-- Google login
-- Role-based access control
+- JWT token, refresh token, session
+- Password hashing, OTP login, Google login
+- Role-based access control (RBAC)
 - Permission-based access control
 
 ---
@@ -219,38 +253,30 @@ Learn:
 
 This is extremely important.
 
-For MongoDB, learn:
+**For MongoDB, learn:**
 
-- Collections
-- Documents
-- References
-- Embedded documents
-- Indexes
-- Aggregation
-- Transactions
-- Schema design
+- Collections, documents, references, embedded documents
+- Indexes, aggregation, transactions, schema design
 
-Example collections:
+**Example collections:**
 
-```text
-User
-Class
-Schedule
-Enrollment
-PaymentPlan
-Payment
-Notification
-ChatMessage
+```mermaid
+erDiagram
+    User ||--o{ Enrollment : makes
+    Class ||--o{ Enrollment : has
+    Class ||--o{ Schedule : has
+    User ||--o{ Payment : makes
+    PaymentPlan ||--o{ Payment : defines
+    User ||--o{ Notification : receives
+    User ||--o{ ChatMessage : sends
 ```
 
-You must understand:
+**You must understand:**
 
-- When to embed data
-- When to reference data
+- When to embed vs. reference data
 - How to avoid duplicate data
 - How to design indexes
-- How to handle soft delete
-- How to track `createdAt` and `updatedAt`
+- Soft delete, `createdAt`, `updatedAt`
 
 ---
 
@@ -258,39 +284,18 @@ You must understand:
 
 Most real applications need file uploads.
 
-Examples:
+**Examples:** profile image, class image, payment proof, QR code, documents, certificates
 
-- Profile image
-- Class image
-- Payment proof
-- QR code
-- Documents
-- Certificates
+**Learn:** Multer, local storage, public/private folders, S3, CloudFront/CDN, file size limits, type validation, signed URLs
 
-Learn:
+**Basic flow:**
 
-- Multer
-- Local file storage
-- Public folder
-- Private file storage
-- S3 bucket
-- CloudFront/CDN
-- File size limits
-- File type validation
-- Signed URLs
-
-Basic flow:
-
-```text
-User uploads file
- ↓
-Backend validates file
- ↓
-File is stored in server/S3
- ↓
-File URL is saved in database
- ↓
-Frontend displays file
+```mermaid
+flowchart TD
+    U[User uploads file] --> V[Backend validates file]
+    V --> S[Store in server / S3]
+    S --> DB[(Save file URL in database)]
+    DB --> F[Frontend displays file]
 ```
 
 ---
@@ -299,30 +304,20 @@ Frontend displays file
 
 Real applications communicate with users.
 
-Learn:
+**Learn:**
 
-- Email service
-- SMS service
-- WhatsApp Business API
-- Web push notifications
-- Firebase FCM for mobile
-- In-app notifications
-- Socket notifications
+- Email, SMS, WhatsApp Business API
+- Web push, Firebase FCM, in-app notifications, socket notifications
 
-Example:
+**Example: student enrolls**
 
-```text
-Student enrolls
- ↓
-Instructor gets notification
- ↓
-Email sent
- ↓
-WhatsApp sent
- ↓
-Push notification sent
- ↓
-Notice saved in database
+```mermaid
+flowchart TD
+    E[Student enrolls] --> N[Instructor notification]
+    N --> EM[Email sent]
+    EM --> WA[WhatsApp sent]
+    WA --> PN[Push notification sent]
+    PN --> DB[(Notice saved in database)]
 ```
 
 ---
@@ -331,91 +326,66 @@ Notice saved in database
 
 Used for chat, live notifications, and dashboards.
 
-Learn:
+**Learn:** WebSocket, Socket.IO, rooms, events, online users, unread count, real-time updates
 
-- WebSocket
-- Socket.IO
-- Rooms
-- Events
-- Online users
-- Unread count
-- Real-time updates
+**Example: chat message**
 
-Example:
+```mermaid
+sequenceDiagram
+    actor Student
+    participant Socket as Socket.IO
+    participant API as Backend
+    participant DB as MongoDB
+    actor Instructor
 
-```text
-Student sends message
- ↓
-Backend receives socket event
- ↓
-Message saved in database
- ↓
-Instructor receives message instantly
+    Student->>Socket: send message event
+    Socket->>API: Handle message
+    API->>DB: Save message
+    DB-->>API: OK
+    API->>Socket: Emit to room
+    Socket-->>Instructor: Message received instantly
 ```
+
+---
+
+# Part II — Deployment & Server
 
 ---
 
 ## 10. Server Basics
 
-Now move from code to infrastructure.
+Move from code to infrastructure.
 
-Learn:
+**Learn:**
 
-- What is a server?
-- What is Linux?
-- What is Ubuntu?
-- What is SSH?
-- What is a process?
-- What is a port?
-- What is a firewall?
+- What is a server, Linux, Ubuntu?
+- SSH, processes, ports, firewalls
 
-Basic server flow:
+**Basic server flow:**
 
-```text
-Developer laptop
- ↓
-GitHub
- ↓
-Server
- ↓
-Application runs on port 3000
- ↓
-Nginx exposes it to the internet
+```mermaid
+flowchart LR
+    L[Developer laptop] --> G[GitHub]
+    G --> S[Server]
+    S --> P[App on port 3000]
+    P --> N[Nginx exposes to internet]
 ```
 
-Commands to know:
+**Commands to know:**
 
 ```bash
 ssh user@server-ip
-ls
-cd
-mkdir
-nano
-cat
-tail
-ps
-kill
-sudo
-chmod
-chown
+ls, cd, mkdir, nano, cat, tail
+ps, kill, sudo, chmod, chown
 ```
 
 ---
 
 ## 11. Node.js App Deployment
 
-For a Node.js backend, learn:
+**Learn:** `npm install`, environment variables, `.env`, PM2, logs, restart, reload, build
 
-- `npm install`
-- Environment variables
-- `.env` files
-- PM2
-- Logs
-- Restart
-- Reload
-- Build
-
-Typical backend deployment:
+**Typical backend deployment:**
 
 ```bash
 git pull
@@ -425,48 +395,27 @@ pm2 restart app
 pm2 logs
 ```
 
-PM2 concepts:
-
-- Process manager
-- Auto restart
-- Logs
-- Startup script
-- Cluster mode
-- Environment config
+**PM2 concepts:** process manager, auto restart, logs, startup script, cluster mode, environment config
 
 ---
 
 ## 12. Frontend Deployment
 
-Angular app deployment flow:
+**Angular deployment flow:**
 
-```text
-Angular source code
- ↓
-npm run build
- ↓
-dist folder generated
- ↓
-Nginx serves static files
- ↓
-Browser loads Angular app
+```mermaid
+flowchart TD
+    SRC[Angular source code] --> BUILD[npm run build]
+    BUILD --> DIST[dist folder generated]
+    DIST --> NG[Nginx serves static files]
+    NG --> BR[Browser loads Angular app]
 ```
 
-Learn:
+**Learn:**
 
-- Angular build
-- Environment files
-- API base URL
-- Static hosting
-- Browser caching
-- Service worker
-- SPA routing fallback
-
-Important Nginx setting for Angular:
-
-```text
-All frontend routes should fallback to index.html
-```
+- Angular build, environment files, API base URL
+- Static hosting, browser caching, service worker
+- SPA routing fallback — all frontend routes should fallback to `index.html`
 
 ---
 
@@ -474,28 +423,20 @@ All frontend routes should fallback to index.html
 
 Nginx is a very important infrastructure component.
 
-It can:
+**It can:**
 
-- Serve frontend
-- Forward API requests to Node.js
-- Handle HTTPS
-- Handle redirects
-- Compress files
-- Set upload limits
+- Serve frontend, forward API requests to Node.js
+- Handle HTTPS, redirects, compression, upload limits
 - Route WebSocket traffic
 
-Typical flow:
+**Typical flow:**
 
-```text
-User visits classintown.com
- ↓
-Nginx receives request on port 443
- ↓
-If frontend route → serve Angular
- ↓
-If /api route → forward to Node.js port 3000
- ↓
-If /socket.io route → forward WebSocket
+```mermaid
+flowchart TD
+    U[User visits classintown.com] --> N[Nginx on port 443]
+    N -->|frontend route| A[Serve Angular]
+    N -->|/api route| B[Forward to Node.js :3000]
+    N -->|/socket.io route| W[Forward WebSocket]
 ```
 
 ---
@@ -504,30 +445,14 @@ If /socket.io route → forward WebSocket
 
 This is where your app becomes public.
 
-Learn:
+**Learn:** domain name, DNS, A record, CNAME, nameserver, SSL, HTTPS, Let's Encrypt, Certbot
 
-- Domain name
-- DNS
-- A record
-- CNAME
-- Nameserver
-- SSL certificate
-- HTTPS
-- Let's Encrypt
-- Certbot
-
-Example:
-
-```text
-classintown.com
- ↓
-DNS A record points to server IP
- ↓
-Nginx receives request
- ↓
-SSL certificate secures connection
- ↓
-App loads securely
+```mermaid
+flowchart TD
+    D[classintown.com] --> DNS[DNS A record → server IP]
+    DNS --> N[Nginx receives request]
+    N --> SSL[SSL certificate secures connection]
+    SSL --> APP[App loads securely]
 ```
 
 ---
@@ -536,100 +461,72 @@ App loads securely
 
 Every serious app has multiple environments.
 
-```text
-Local
-Development
-Staging
-Production
+```mermaid
+flowchart LR
+    L[Local] --> DEV[Development]
+    DEV --> STG[Staging]
+    STG --> PROD[Production]
 ```
 
-Each environment has different:
+**Each environment has different:**
 
-- Database URL
-- API URL
-- Email keys
-- Payment keys
-- Google credentials
-- WhatsApp credentials
+- Database URL, API URL
+- Email, payment, Google, WhatsApp credentials
 - Storage bucket
 
-Never hardcode secrets in code.
-
-Use:
-
-- `.env`
-- Environment variables
-- Secret manager
-- Config files
+**Never hardcode secrets.** Use `.env`, environment variables, secret manager, config files.
 
 ---
 
 ## 16. Git and CI/CD
 
-Manual deployment is fine in the beginning, but later you need automation.
+Manual deployment is fine in the beginning; later you need automation.
 
-Learn:
+**Learn:** Git, branches, pull requests, GitHub Actions, CI/CD pipeline, build/test/deploy steps, rollback
 
-- Git
-- Branches
-- Pull requests
-- GitHub Actions
-- CI/CD pipeline
-- Build step
-- Test step
-- Deploy step
-- Rollback
-
-Simple CI/CD flow:
-
-```text
-Developer pushes code
- ↓
-GitHub Actions runs tests
- ↓
-Build is created
- ↓
-Code deployed to server
- ↓
-PM2 restarts app
+```mermaid
+flowchart TD
+    P[Developer pushes code] --> T[GitHub Actions runs tests]
+    T --> B[Build created]
+    B --> D[Deploy to server]
+    D --> R[PM2 restarts app]
 ```
+
+---
+
+# Part III — Cloud & Operations
 
 ---
 
 ## 17. Docker
 
-Docker helps package your application.
+Docker helps package your application consistently.
 
-Learn:
+**Learn:** image, container, Dockerfile, Docker Compose, volumes, networks, environment variables
 
-- Image
-- Container
-- Dockerfile
-- Docker Compose
-- Volumes
-- Networks
-- Environment variables
-
-Example container setup:
-
-```text
-Angular container
-Node.js container
-MongoDB container
-Redis container
-Nginx container
+```mermaid
+flowchart TB
+    subgraph Containers
+        ANG[Angular]
+        NODE[Node.js]
+        MONGO[(MongoDB)]
+        REDIS[(Redis)]
+        NGX[Nginx]
+    end
+    ANG --> NGX
+    NGX --> NODE
+    NODE --> MONGO
+    NODE --> REDIS
 ```
-
-Docker helps make deployments more consistent.
 
 ---
 
 ## 18. Cloud Infrastructure
 
-For AWS, start with:
+**AWS services to start with:**
 
 | AWS Service | Purpose |
-|---|---|
+|-------------|---------|
 | EC2 | Virtual server |
 | S3 | File storage |
 | RDS | Managed SQL database |
@@ -642,24 +539,17 @@ For AWS, start with:
 | CloudWatch | Logs and monitoring |
 | Lambda | Serverless functions |
 
-For this type of application, common architecture:
+**Common architecture for this type of application:**
 
-```text
-CloudFront
- ↓
-Nginx / Load Balancer
- ↓
-Angular frontend
- ↓
-Node.js backend
- ↓
-MongoDB Atlas
- ↓
-S3 for files
- ↓
-Redis for cache/queue
- ↓
-Email/WhatsApp/Payment providers
+```mermaid
+flowchart TD
+    CF[CloudFront] --> LB[Nginx / Load Balancer]
+    LB --> FE[Angular frontend]
+    FE --> BE[Node.js backend]
+    BE --> DB[(MongoDB Atlas)]
+    BE --> S3[S3 for files]
+    BE --> R[(Redis cache/queue)]
+    BE --> EXT[Email / WhatsApp / Payment providers]
 ```
 
 ---
@@ -668,31 +558,15 @@ Email/WhatsApp/Payment providers
 
 Security must be learned throughout, not only at the end.
 
-Important topics:
+**Important topics:**
 
-- HTTPS everywhere
-- Password hashing
-- JWT expiry
-- Refresh token rotation
-- Input validation
-- Rate limiting
-- CORS
-- Helmet
-- SQL/NoSQL injection prevention
-- File upload validation
-- Role-based access
-- API authorization
-- Secrets management
-- Server firewall
-- Database access restriction
-- Audit logs
+- HTTPS everywhere, password hashing, JWT expiry, refresh token rotation
+- Input validation, rate limiting, CORS, Helmet
+- SQL/NoSQL injection prevention, file upload validation
+- RBAC, API authorization, secrets management
+- Server firewall, database access restriction, audit logs
 
-Basic rule:
-
-```text
-Never trust frontend data.
-Always validate again in the backend.
-```
+> **Basic rule:** Never trust frontend data. Always validate again in the backend.
 
 ---
 
@@ -700,33 +574,11 @@ Always validate again in the backend.
 
 Performance means making the app fast and stable.
 
-Frontend performance:
-
-- Lazy loading
-- Code splitting
-- Image compression
-- Caching
-- CDN
-- Minification
-- Bundle size reduction
-
-Backend performance:
-
-- Database indexes
-- Pagination
-- Caching
-- Avoid heavy synchronous work
-- Queue background jobs
-- Optimize API responses
-
-Database performance:
-
-- Indexes
-- Aggregation optimization
-- Query analysis
-- Avoid unbounded queries
-- Pagination
-- Archiving old data
+| Layer | Techniques |
+|-------|------------|
+| **Frontend** | Lazy loading, code splitting, image compression, caching, CDN, minification, bundle size reduction |
+| **Backend** | Database indexes, pagination, caching, avoid heavy sync work, queue background jobs, optimize API responses |
+| **Database** | Indexes, aggregation optimization, query analysis, avoid unbounded queries, pagination, archiving old data |
 
 ---
 
@@ -734,22 +586,15 @@ Database performance:
 
 Caching reduces load.
 
-Learn:
+**Learn:** browser cache, CDN cache, Redis cache, API response cache, database query cache
 
-- Browser cache
-- CDN cache
-- Redis cache
-- API response cache
-- Database query cache
-
-Example:
-
-```text
-Class categories do not change often
- ↓
-Store in Redis
- ↓
-Serve quickly without hitting database every time
+```mermaid
+flowchart LR
+    REQ[API request for categories] --> R{In Redis?}
+    R -->|Yes| FAST[Serve from cache]
+    R -->|No| DB[(Query MongoDB)]
+    DB --> STORE[Store in Redis]
+    STORE --> FAST
 ```
 
 ---
@@ -758,35 +603,23 @@ Serve quickly without hitting database every time
 
 Not every task should happen during the user request.
 
-Example:
+```mermaid
+sequenceDiagram
+    actor User
+    participant API
+    participant Queue
+    participant Worker
 
-```text
-User enrolls in class
- ↓
-API responds quickly
- ↓
-Background job sends email, WhatsApp, push notification
+    User->>API: Enroll in class
+    API->>Queue: Enqueue notification job
+    API-->>User: 200 OK (fast response)
+    Queue->>Worker: Process job
+    Worker->>Worker: Send email, WhatsApp, push
 ```
 
-Learn:
+**Learn:** queue, worker, retry, failed jobs, delayed jobs, cron jobs, BullMQ, Redis
 
-- Queue
-- Worker
-- Retry
-- Failed jobs
-- Delayed jobs
-- Cron jobs
-- BullMQ
-- Redis
-
-Use cases:
-
-- Send emails
-- Generate reports
-- Send reminders
-- Process payment proof
-- Sync calendar events
-- Expire payment links
+**Use cases:** send emails, generate reports, send reminders, process payment proof, sync calendar events, expire payment links
 
 ---
 
@@ -794,38 +627,16 @@ Use cases:
 
 You must know what is happening in production.
 
-Learn:
+**Learn:** application/error/access logs, PM2 logs, Nginx logs, database logs, uptime monitoring, alerting, performance monitoring
 
-- Application logs
-- Error logs
-- Access logs
-- PM2 logs
-- Nginx logs
-- Database logs
-- Uptime monitoring
-- Alerting
-- Performance monitoring
+**Questions to answer:**
 
-Questions to answer:
+- Is the server up? Is the API slow?
+- Which API is failing? Which user got an error?
+- Why did payment fail? Was WhatsApp sent?
+- Did the Google Calendar event get created?
 
-- Is the server up?
-- Is the API slow?
-- Which API is failing?
-- Which user got an error?
-- Why did payment fail?
-- Was WhatsApp sent?
-- Did Google Calendar event get created?
-
-Tools:
-
-- CloudWatch
-- Sentry
-- Grafana
-- Prometheus
-- UptimeRobot
-- PM2 logs
-- Nginx logs
-- MongoDB Atlas monitoring
+**Tools:** CloudWatch, Sentry, Grafana, Prometheus, UptimeRobot, PM2 logs, Nginx logs, MongoDB Atlas monitoring
 
 ---
 
@@ -833,29 +644,20 @@ Tools:
 
 This is production-grade knowledge.
 
-Learn:
+**Learn:** database backup, file backup, point-in-time recovery, restore testing, server snapshot, multi-region backup, disaster recovery plan
 
-- Database backup
-- File backup
-- Point-in-time recovery
-- Restore testing
-- Server snapshot
-- Multi-region backup
-- Disaster recovery plan
+> **Important rule:** Backup is useless unless restore is tested.
 
-Important rule:
+**You should know:**
 
-```text
-Backup is useless unless restore is tested.
-```
-
-You should know:
-
-- How often is the database backed up?
-- Where is the backup stored?
+- How often is the database backed up? Where is it stored?
 - Who can access the backup?
 - How quickly can the app be restored?
 - What happens if the server crashes?
+
+---
+
+# Part IV — Scale & Production
 
 ---
 
@@ -863,44 +665,34 @@ You should know:
 
 Scaling means handling more users.
 
-Vertical scaling:
+```mermaid
+flowchart TD
+    subgraph Vertical["Vertical scaling"]
+        V1[Bigger server]
+        V2[More RAM / CPU]
+    end
 
-```text
-Bigger server
-More RAM
-More CPU
+    subgraph Horizontal["Horizontal scaling"]
+        H1[Multiple backend servers]
+        H2[Load balancer distributes traffic]
+    end
 ```
 
-Horizontal scaling:
+**Typical scaling path:**
 
-```text
-Multiple backend servers
-Load balancer distributes traffic
+```mermaid
+flowchart TD
+    S1[Single server] --> S2[Separate database]
+    S2 --> S3[Add Redis]
+    S3 --> S4[Move files to S3]
+    S4 --> S5[Add load balancer]
+    S5 --> S6[Multiple backend servers]
+    S6 --> S7[CDN]
+    S7 --> S8[Queue workers]
+    S8 --> S9[Microservices only when needed]
 ```
 
-Typical scaling path:
-
-```text
-Single server
- ↓
-Separate database
- ↓
-Add Redis
- ↓
-Move files to S3
- ↓
-Add load balancer
- ↓
-Multiple backend servers
- ↓
-CDN
- ↓
-Queue workers
- ↓
-Microservices only when needed
-```
-
-Do not start with microservices too early.
+> Do not start with microservices too early.
 
 ---
 
@@ -908,17 +700,16 @@ Do not start with microservices too early.
 
 High availability means the app should not go down easily.
 
-Learn:
+**Learn:** load balancer, multiple servers, managed database, auto restart, health checks, failover, zero-downtime deployment, blue-green deployment, rolling deployment
 
-- Load balancer
-- Multiple servers
-- Managed database
-- Auto restart
-- Health checks
-- Failover
-- Zero-downtime deployment
-- Blue-green deployment
-- Rolling deployment
+```mermaid
+flowchart LR
+    LB[Load Balancer] --> S1[Server 1]
+    LB --> S2[Server 2]
+    LB --> S3[Server N]
+    S1 & S2 & S3 --> HC[Health checks]
+    HC -->|unhealthy| FO[Failover / remove instance]
+```
 
 ---
 
@@ -926,206 +717,161 @@ Learn:
 
 Important for cloud infrastructure.
 
-Learn:
+**Learn:** instance, storage, bandwidth, database, backup, logging, API provider costs; cloud bill alerts, budgets, auto-scaling limits
 
-- Instance cost
-- Storage cost
-- Bandwidth cost
-- Database cost
-- Backup cost
-- Logging cost
-- API provider cost
-- Cloud bill alerts
-- Budgets
-- Auto-scaling limits
+**For AWS, always set:**
 
-For AWS, always set:
-
-- Billing alerts
-- Budget alerts
-- IAM restrictions
-- Security groups
-- CloudWatch alarms
+- Billing alerts, budget alerts
+- IAM restrictions, security groups, CloudWatch alarms
 
 ---
 
 ## 28. Production Architecture
 
-Final production-level architecture:
+**Final production-level architecture:**
 
-```text
-Users
- ↓
-Domain / DNS
- ↓
-Cloudflare / CDN
- ↓
-Load Balancer / Nginx
- ↓
-Frontend Angular App
- ↓
-Backend Node.js APIs
- ↓
-MongoDB Atlas
- ↓
-Redis Cache / Queue
- ↓
-S3 File Storage
- ↓
-Email / WhatsApp / Payment / Google Calendar APIs
- ↓
-Monitoring / Logging / Backup
+```mermaid
+flowchart TD
+    U[Users] --> DNS[Domain / DNS]
+    DNS --> CDN[Cloudflare / CDN]
+    CDN --> LB[Load Balancer / Nginx]
+    LB --> FE[Angular Frontend]
+    FE --> BE[Node.js APIs]
+    BE --> DB[(MongoDB Atlas)]
+    BE --> R[(Redis Cache / Queue)]
+    BE --> S3[S3 File Storage]
+    BE --> EXT[Email / WhatsApp / Payment / Google Calendar]
+    BE --> OBS[Monitoring / Logging / Backup]
 ```
 
 ---
 
-# Best Learning Order
+# Learning Guide
+
+---
+
+## Best Learning Order
 
 Follow this exact sequence:
 
-1. What is a web application?
-2. Frontend, backend, database
-3. HTTP and APIs
-4. Authentication and authorization
-5. Database design
-6. File uploads and storage
-7. Notifications and integrations
-8. Linux server basics
-9. Deploy backend with PM2
-10. Deploy frontend with Nginx
-11. Domain, DNS, SSL
-12. Environment variables
-13. Git and deployment flow
-14. Docker basics
-15. Cloud basics
-16. Security
-17. Performance
-18. Caching
-19. Queues and background jobs
-20. Monitoring and logging
-21. Backup and disaster recovery
-22. Scaling
-23. High availability
-24. Cost control
-25. Full production architecture
+| # | Topic |
+|---|-------|
+| 1 | What is a web application? |
+| 2 | Frontend, backend, database |
+| 3 | HTTP and APIs |
+| 4 | Authentication and authorization |
+| 5 | Database design |
+| 6 | File uploads and storage |
+| 7 | Notifications and integrations |
+| 8 | Linux server basics |
+| 9 | Deploy backend with PM2 |
+| 10 | Deploy frontend with Nginx |
+| 11 | Domain, DNS, SSL |
+| 12 | Environment variables |
+| 13 | Git and deployment flow |
+| 14 | Docker basics |
+| 15 | Cloud basics |
+| 16 | Security |
+| 17 | Performance |
+| 18 | Caching |
+| 19 | Queues and background jobs |
+| 20 | Monitoring and logging |
+| 21 | Backup and disaster recovery |
+| 22 | Scaling |
+| 23 | High availability |
+| 24 | Cost control |
+| 25 | Full production architecture |
 
 ---
 
-# Final Mental Model
+## Final Mental Model
 
 Whenever you think about infrastructure, think in this order:
 
-```text
-How does the user reach the app?
-How does the frontend load?
-How does the frontend call the backend?
-How does the backend process business logic?
-Where is data stored?
-Where are files stored?
-How are notifications sent?
-How is the app secured?
-How is it deployed?
-How is it monitored?
-How is it backed up?
-How will it scale?
-What happens when something fails?
+```mermaid
+flowchart TD
+    Q1[How does the user reach the app?]
+    Q2[How does the frontend load?]
+    Q3[How does the frontend call the backend?]
+    Q4[How does the backend process business logic?]
+    Q5[Where is data stored?]
+    Q6[Where are files stored?]
+    Q7[How are notifications sent?]
+    Q8[How is the app secured?]
+    Q9[How is it deployed?]
+    Q10[How is it monitored?]
+    Q11[How is it backed up?]
+    Q12[How will it scale?]
+    Q13[What happens when something fails?]
+
+    Q1 --> Q2 --> Q3 --> Q4 --> Q5 --> Q6 --> Q7 --> Q8 --> Q9 --> Q10 --> Q11 --> Q12 --> Q13
 ```
 
 ---
 
-# Suggested Practical Learning Path
+## Suggested Practical Learning Path
 
-## Phase 1: Local Understanding
+### Phase 1: Local Understanding
 
-Build and run a simple app locally:
+**Build and run locally:** Angular frontend + Node.js backend + MongoDB
 
-```text
-Angular frontend
-Node.js backend
-MongoDB database
+**Goal:** Understand how frontend, backend, and database communicate.
+
+```mermaid
+flowchart LR
+    A[Angular] <-->|HTTP| N[Node.js]
+    N <-->|Driver| M[(MongoDB)]
 ```
 
-Goal:
+---
 
-```text
-Understand how frontend, backend, and database communicate.
+### Phase 2: First Server Deployment
+
+**Learn:** SSH, PM2, Nginx, domain, SSL, logs
+
+**Goal:** Make the app accessible through a real domain.
+
+```mermaid
+flowchart LR
+    DEV[Your machine] -->|git push| GH[GitHub]
+    GH -->|deploy| SRV[Linux server]
+    SRV --> DOM[classintown.com]
 ```
 
-## Phase 2: First Server Deployment
+---
 
-Deploy the backend and frontend on a Linux server.
+### Phase 3: Production Readiness
 
-Learn:
+**Add:** environment variables, file storage, email/WhatsApp notifications, error handling, security middleware, backups, monitoring
 
-```text
-SSH
-PM2
-Nginx
-Domain
-SSL
-Logs
-```
+**Goal:** Make the app safe, reliable, and maintainable.
 
-Goal:
+---
 
-```text
-Make the app accessible through a real domain.
-```
+### Phase 4: Scaling
 
-## Phase 3: Production Readiness
+**Add:** Redis, queues, CDN, S3, load balancer, multiple backend instances
 
-Add production features:
+**Goal:** Make the app ready for more users and traffic.
 
-```text
-Environment variables
-File storage
-Email/WhatsApp notifications
-Error handling
-Security middleware
-Backups
-Monitoring
-```
+---
 
-Goal:
+### Phase 5: Mature Infrastructure
 
-```text
-Make the app safe, reliable, and maintainable.
-```
+**Add:** CI/CD, Docker, infrastructure as code, observability, disaster recovery, cost controls
 
-## Phase 4: Scaling
+**Goal:** Operate the application like a professional production system.
 
-Add:
-
-```text
-Redis
-Queues
-CDN
-S3
-Load balancer
-Multiple backend instances
-```
-
-Goal:
-
-```text
-Make the app ready for more users and traffic.
-```
-
-## Phase 5: Mature Infrastructure
-
-Add:
-
-```text
-CI/CD
-Docker
-Infrastructure as code
-Observability
-Disaster recovery
-Cost controls
-```
-
-Goal:
-
-```text
-Operate the application like a professional production system.
+```mermaid
+flowchart TB
+    subgraph Mature["Mature production stack"]
+        CICD[CI/CD pipeline]
+        DOC[Docker containers]
+        IAC[Infrastructure as code]
+        OBS[Observability]
+        DR[Disaster recovery]
+        COST[Cost controls]
+    end
+    CICD --> DOC --> IAC
+    IAC --> OBS --> DR --> COST
 ```
