@@ -4,6 +4,23 @@ A step-by-step learning path to understand how a web application moves from code
 
 ---
 
+flowchart TD
+    U[Users] --> DNS[Domain / DNS]
+    DNS --> CDN[CDN - CloudFront]
+    CDN --> LB[Load Balancer]
+    LB --> GW[API Gateway]
+    GW --> NGX[Nginx]
+    NGX --> FE[Angular]
+    NGX --> BE[Node.js x N]
+    BE --> CACHE[(Redis Cache)]
+    BE --> Q[Queue / Workers]
+    BE --> DB[(MongoDB Atlas)]
+    BE --> S3[S3]
+    BE --> EXT[Payment / Email / WhatsApp]
+    BE --> OBS[Logs / Monitoring / Alerts]
+    DB --> BKP[Backups]
+
+
 ## Table of Contents
 
 | Part | Focus | Sections |
